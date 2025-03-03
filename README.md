@@ -1,0 +1,264 @@
+# project-brain
+
+<p align="center">
+  <img src="./assets/hero.png" alt="One folder. Every session knows where you left off." width="100%" />
+</p>
+
+> **Different session. Same brain.**
+>
+> A folder structure + collaboration protocol that lets your AI assistant pick up a project after a context wipe — across new sessions, new windows, new collaborators.
+
+[中文版 →](./README.zh-CN.md)
+
+**Part of [Sprout Labs](https://ethanflow.com)** — Local-first AI memory & agent safety, built independently by Ethan (Independent Product Designer & AI Builder, since 2016).
+[ethanflow.com](https://ethanflow.com) · [LinkedIn](https://www.linkedin.com/in/ethan-ys/) · [@ethanflow_lab](https://x.com/ethanflow_lab) · [GitHub](https://github.com/Ethan-YS)
+
+<p align="center">
+    <a href="https://linux.do" alt="LINUX DO">
+        <img src="https://img.shields.io/badge/LINUX-DO-FFB003.svg?logo=data:image/svg%2bxml;base64,DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiPjxwYXRoIGQ9Ik00Ni44Mi0uMDU1aDYuMjVxMjMuOTY5IDIuMDYyIDM4IDIxLjQyNmM1LjI1OCA3LjY3NiA4LjIxNSAxNi4xNTYgOC44NzUgMjUuNDV2Ni4yNXEtMi4wNjQgMjMuOTY4LTIxLjQzIDM4LTExLjUxMiA3Ljg4NS0yNS40NDUgOC44NzRoLTYuMjVxLTIzLjk3LTIuMDY0LTM4LjAwNC0yMS40M1EuOTcxIDY3LjA1Ni0uMDU0IDUzLjE4di02LjQ3M0MxLjM2MiAzMC43ODEgOC41MDMgMTguMTQ4IDIxLjM3IDguODE3IDI5LjA0NyAzLjU2MiAzNy41MjcuNjA0IDQ2LjgyMS0uMDU2IiBzdHlsZT0ic3Ryb2tlOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7ZmlsbDojZWNlY2VjO2ZpbGwtb3BhY2l0eToxIi8+PHBhdGggZD0iTTQ3LjI2NiAyLjk1N3EyMi41My0uNjUgMzcuNzc3IDE1LjczOGE0OS43IDQ5LjcgMCAwIDEgNi44NjcgMTAuMTU3cS00MS45NjQuMjIyLTgzLjkzIDAgOS43NS0xOC42MTYgMzAuMDI0LTI0LjM4N2E2MSA2MSAwIDAgMSA5LjI2Mi0xLjUwOCIgc3R5bGU9InN0cm9rZTpub25lO2ZpbGwtcnVsZTpldmVub2RkO2ZpbGw6IzE5MTkxOTtmaWxsLW9wYWNpdHk6MSIvPjxwYXRoIGQ9Ik03Ljk4IDcwLjkyNmMyNy45NzctLjAzNSA1NS45NTQgMCA4My45My4xMTNRODMuNDI2IDg3LjQ3MyA2Ni4xMyA5NC4wODZxLTE4LjgxIDYuNTQ0LTM2LjgzMi0xLjg5OC0xNC4yMDMtNy4wOS0yMS4zMTctMjEuMjYyIiBzdHlsZT0ic3Ryb2tlOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7ZmlsbDojZjlhZjAwO2ZpbGwtb3BhY2l0eToxIi8+PC9zdmc+" /></a>
+</p>
+
+---
+
+## The problem
+
+Long-running projects with AI coding assistants (Claude Code, Cursor, Copilot, etc.) hit a counter-intuitive wall:
+
+> **Larger context windows don't solve the problem. Better information structure does.**
+
+A wider window doesn't mean it gets read. Read doesn't mean located. Located doesn't mean prioritized. Without structure, every new session starts with "wait, what's going on here?" — and the AI either reads too much (wasting tokens) or misses the critical pieces.
+
+Symptoms you'll recognize:
+
+- One README mixing project pitch + current status + decision history + how-to-run
+- Sprawling docs where boundaries blur (one architecture file containing design + ops + history + bugs)
+- Decisions buried in commit messages, chat logs, and footnotes — never traceable when you need them
+- Cross-window handoff loses the "fresh stuff in your head" — the next session starts blind
+- Projects running **multiple parallel workstreams** (e.g., dev + ops + outreach as three parallel streams) lose track of which session is on which line — switching between them re-orients from scratch every time
+
+`project-brain` is a structural answer: a `brain/` folder layout + a small set of protocols, designed so a fresh AI session can read 2-3 files and be productive.
+
+## Quick start
+
+### Option A — install as a Claude Code plugin (recommended for Claude Code users)
+
+In Claude Code, run these two slash commands:
+
+```
+/plugin marketplace add Ethan-YS/project-brain
+/plugin install project-brain@sprout-labs
+```
+
+If `/plugin` isn't exposed in your Claude Code environment (some embedded / SDK contexts strip it), the CLI form does the exact same thing — run from any terminal:
+
+```bash
+claude plugin marketplace add Ethan-YS/project-brain
+claude plugin install project-brain@sprout-labs
+```
+
+That's it. From any project after that, just say:
+
+- **"set up project brain"** — kick off a new brain
+- **"resume this project"** — load `MAP.md` + `STATUS.md` + (if exists) `HANDOFF.md`
+- **"I'm switching windows"** / **"context's getting full"** — write a HANDOFF before context dies
+- **"update the project brain"** — propose updates with reasons, you approve per item
+
+The skill handles five workflows: new-project kick-off, startup resume, window-switch handoff, updates, and (in concurrent multi-workstream projects) handing work from one workstream to another. Auto-trigger requires an explicit user request — it intentionally does **not** activate just because a `brain/` folder exists.
+
+> **Already installed the old way?** If you previously cloned to `~/.claude/skills/project-brain`, remove it first: `rm -rf ~/.claude/skills/project-brain`. The plugin install is the supported path going forward.
+
+> **Update later**: `/plugin marketplace update sprout-labs` to fetch the latest version.
+
+### Option B — manual scaffold (works with any AI assistant)
+
+If you don't use Claude Code, or you just want the scaffold script:
+
+```bash
+git clone https://github.com/Ethan-YS/project-brain.git
+
+# Scaffold into your project (defaults to all four AI adapters, English)
+./project-brain/scripts/scaffold.sh /path/to/your/project
+
+# Or pick specific adapters:
+./project-brain/scripts/scaffold.sh /path/to/your/project --tools claude,cursor
+
+# For projects documented in Chinese — gives Chinese brain/ + CLAUDE.md
+# (other adapters stay English — they're consumed by AI tools, not humans):
+./project-brain/scripts/scaffold.sh /path/to/your/project --lang zh
+
+# Fill in brain/PROJECT.md on day one
+# Walk through ⚠️ TODO ⚠️ placeholders
+```
+
+What the scaffold gives you:
+
+| File | Tool |
+|---|---|
+| `brain/` | The project brain (PROJECT/MAP/STATUS/DECISIONS/HANDOFF + topics/) |
+| `CLAUDE.md` | Claude Code instruction file |
+| `.cursorrules` | Cursor instruction file |
+| `.github/copilot-instructions.md` | GitHub Copilot Chat |
+| `AGENTS.md` | Codex CLI / Aider / Continue (AGENTS.md convention) |
+
+When a new AI session opens your project, the auto-loaded instruction file directs it to read `brain/MAP.md` + `brain/STATUS.md`. If `brain/HANDOFF.md` exists, it picks up the previous session's "still-warm-not-yet-written-down" thoughts.
+
+### Health check (any time after scaffolding)
+
+```bash
+./project-brain/scripts/doctor.sh /path/to/your/project
+```
+
+Read-only structural checks: missing core files, STATUS over 80 lines, decisions without "rejected alternatives," topics/ files not registered in MAP, stale `⚠️ TODO ⚠️` placeholders, etc. Reports issues but never fixes them — that's still your call. See [scripts/doctor.sh](./scripts/doctor.sh).
+
+### See a fully-filled example
+
+If the empty templates feel abstract, see [examples/small-saas/](./examples/small-saas/) — a fictional SaaS project ("Quill," a local-first notes app at v0.3) with every file filled in. Reading it is the fastest way to understand what each `brain/` file looks like in real use.
+
+## Structure
+
+```
+brain/
+├── PROJECT.md       What is this project? What do we explicitly NOT do?
+├── MAP.md           Module structure + document index ("where do I find X?")
+├── STATUS.md        Current state — overwritable, soft cap 80 lines
+├── DECISIONS.md     Decision log — append-only, requires "rejected alternatives"
+├── HANDOFF.md       Cross-window bridge — what's still in head but not yet written
+├── handoffs/        Archive of past HANDOFFs (timestamped)
+└── topics/          Per-problem-dimension docs
+    ├── systems/      → "How is this designed?"
+    ├── operations/   → "How do I operate it / what to do each release?"
+    ├── planning/     → "What are we going to build / how to plan it?"
+    └── feedback/     → "What is reality / users telling us?"
+```
+
+## Core principles
+
+### 1. Time-scale separation
+
+The five core files in `brain/` are split **by how often they change**, not by topic:
+
+| File | Volatility | When to read |
+|---|---|---|
+| `PROJECT.md` | Almost never | First contact / scope ambiguous |
+| `MAP.md` | Slowly | Every new session |
+| `STATUS.md` | Frequently (per session) | Every new session |
+| `DECISIONS.md` | Append-only, event-driven | Tracing why something is the way it is |
+| `HANDOFF.md` | Per window-switch | New session start (if exists) |
+
+Why volatility-based? Because **mixing low-frequency content with high-frequency content forces the low-frequency content to be re-edited every session** — the most common mode of doc rot.
+
+### 2. Problem-dimension classification (not by module)
+
+`brain/topics/` is divided into 4 dimensions: `systems` / `operations` / `planning` / `feedback`. A single business module (say, "payment") has its design in `systems/`, deploy logs in `operations/`, pricing strategy in `planning/`, user feedback in `feedback/`.
+
+Why? Modules grow, shrink, get renamed, get merged. The four problem dimensions are far more stable.
+
+### 3. Decision logging requires "rejected alternatives"
+
+Every entry in `DECISIONS.md` must include what was considered and rejected, and why. Without this, the file degrades into a worse version of `CHANGELOG.md` (which already records "what was done"). The unique value of decision logs is **the paths not taken** — that's where a project's judgment lives.
+
+### 4. Judgment Division
+
+When the user says "update the project brain":
+- **The user** decides "should we record now" (high-level pacing instinct)
+- **The AI** decides "specifically what to record / how to write each entry" (specialized understanding of how each file works)
+- **The user** approves or rejects the AI's judgment
+
+The AI should not push specialized judgments back ("which files do you want me to update?") — that hands the wrong layer of judgment to the wrong person.
+
+Since v2.6, routine bookkeeping writes are **tiered** (METHODOLOGY §4.1): `STATUS` / `HANDOFF` / mechanical `MAP` registrations are *write-then-announce* — the AI writes after the work lands and reports it, with git as the review surface. `DECISIONS` / `PROJECT` remain *ask-before-write*. The explicit "update the project brain" checkpoint above keeps per-item approval either way.
+
+### 5. Multi-workstream mode (v2.1, optional)
+
+Some projects naturally have parallel independent workstreams (e.g., development + operations + outreach in one product). For these, `STATUS` and `HANDOFF` split per workstream:
+
+```
+brain/
+├── PROJECT.md           ← shared
+├── MAP.md               ← shared
+├── DECISIONS.md         ← shared
+├── STATUS_dev.md        ← split per workstream
+├── STATUS_ops.md
+├── HANDOFF_dev.md
+├── HANDOFF_ops.md
+├── handoffs/
+│   ├── dev/
+│   └── ops/
+└── topics/              ← shared
+```
+
+Single-workstream projects ignore this — they keep the default `STATUS.md` / `HANDOFF.md`.
+
+**Concurrent windows** (v2.8): when several workstream windows run *at the same time* in one checkout, MAP §6 adds a "Who's on it now" roster — workstreams are durable, windows are disposable, so window names live only there and each new window claims its own row. The registry gains an "Owns" column; requests between workstreams are recorded in both STATUS files; and a short git discipline (shared staging area, stage your own hunks, edit shared files in place) helps keep windows from committing or erasing each other's work. See METHODOLOGY §3.6.
+
+## Why this exists — the evolution story
+
+This methodology didn't appear from a design session. It evolved through real use across multiple projects — each iteration triggered by friction we hit and couldn't ignore.
+
+**v1 (April 2026)**: After accumulating 15+ scattered docs and one 32KB monolithic file in a single project, every new AI session needed to re-read everything to figure out "what's going on here?" We refactored across 4 commits and established the basic structure: `meta/` (continuity layer) + `docs/` (problem-dimension classified). The core insight was **separating files by volatility** — stable / slowly-changing / per-session / append-only — to prevent the most common doc-rot pattern: low-frequency content getting re-edited because it lives next to high-frequency content.
+
+**v2 (April 30, 2026)**: We surveyed community approaches (Prompt Shelf 2026's three-file architecture, softaworks/agent-toolkit's session-handoff skill, Anthropic's official skills repo). We found:
+- Community solutions were stronger at **runtime mechanics** (auto-handoff triggers, staleness detection, handoff chains)
+- Our v1 was structurally deeper in three places: the "what we explicitly DON'T do" forcing function in PROJECT.md, mandatory "rejected alternatives" in decision log, and classification by problem-dimension instead of by module
+
+The plan was "borrow the runtime layer, keep the structural layer." But across 8 rounds of refinement, **the user systematically rejected mechanism creep**. Every time the AI proposed "let me design auto-detection / triggering / staleness checking," the user said "no — that's a judgment I'll make myself."
+
+This crystallized into the **Judgment Division Principle** (see Core principle 4): the user decides "should we record now"; the AI decides "what specifically to record"; the user reviews. Don't hide specialized judgment behind automation.
+
+Companion design changes: merged `meta/` + `docs/` into a single `brain/`, added `HANDOFF.md` for cross-window continuity, replaced "hard keyword detection" with **gentle inquiry** ("does this count as decided?" instead of asserting "we decided X"), made placeholders visually loud (`⚠️ TODO ⚠️`), and made the git prerequisite explicit.
+
+**v2.1 (same day, evening)**: A second project — non-development, running parallel workstreams (official ops + outreach) — broke v2's hidden assumption that "one project = one workstream." The user had naturally evolved a workaround using `STATUS_<workstream>.md` naming. We folded it into the methodology as **Multi-workstream Mode** (Core principle 5): project-level files stay shared, status and handoff split per workstream.
+
+**v2.8 (October 2026)**: A product running three workstreams — web, iOS app, distribution — in **concurrent** windows, one human and a dozen-plus AI windows rotated through in a week, all in one checkout. v2.1 had assumed windows take turns and had explicitly deferred cross-workstream handoff until real-world friction showed which solution fits. It did. The project grew its own answers — a roster separating workstreams from windows (after a handoff turned out to hard-code two other windows' names), two-ledger requests between workstreams, git rules for a shared staging area (after one window swept up another's staged hunks) — and v2.8 writes them down as **Concurrent Workstreams** (METHODOLOGY §3.6, Traps 18–20). Validated on that one project; field reports welcome.
+
+### The meta-takeaway
+
+The healthy evolution pattern wasn't "design everything upfront." It was **"build what works now, let real-world friction drive the next version."** Each version came from a specific, named problem. Each refinement was triggered by a real moment of pain.
+
+If you take one thing from this repo: **resist the urge to design comprehensive automation up front**. Real friction tells you which mechanisms are worth building, and which would just hand specialized judgment to the wrong layer.
+
+## Documentation
+
+- **[METHODOLOGY.md](./METHODOLOGY.md)** — full methodology including all 20 traps, judgment division mechanics, multi-workstream and concurrent-window details, and migration paths
+- **[CHANGELOG.md](./CHANGELOG.md)** — version history
+- **[skills/project-brain/SKILL.md](./skills/project-brain/SKILL.md)** — Claude Code skill manifest (loaded automatically once the plugin is installed)
+- **[.claude-plugin/](./.claude-plugin/)** — `plugin.json` (manifest) + `marketplace.json` (Sprout Labs marketplace entry)
+- **[templates/](./templates/)** — drop-in templates for `brain/` + 4 AI tool adapters
+- **[examples/small-saas/](./examples/small-saas/)** — a fully-filled example brain/ folder
+- **[scripts/scaffold.sh](./scripts/scaffold.sh)** — one-command scaffold into any project
+- **[scripts/doctor.sh](./scripts/doctor.sh)** — read-only health check (10 structural checks covering the most common traps)
+
+## Compatibility
+
+This methodology is AI-agnostic. The repo includes adapter templates for:
+- **Claude Code** — install as a plugin (Option A above) for the full skill experience, or just drop in `CLAUDE.md` for project-level instructions
+- **Cursor** — `.cursorrules`
+- **GitHub Copilot Chat** — `.github/copilot-instructions.md`
+- **Codex CLI / Aider / Continue** — `AGENTS.md` (the [agents.md](https://agents.md) convention)
+- Any other AI assistant that respects a project-level instruction file (write your own pointer to `brain/MAP.md` + `brain/STATUS.md`)
+
+`./scripts/scaffold.sh` copies all four by default; use `--tools claude,cursor` to pick specific ones.
+
+Requirements:
+- **Git** — several mechanisms (HANDOFF archival, decision traceability, file blame) assume git history
+- That's it.
+
+## Status
+
+🌱 v2.4 — methodology stable, 140+ stars, multiple projects in active use. v2.4 ships as a one-command Claude Code plugin (the Sprout Labs marketplace). v2.3 added `scripts/doctor.sh` (structural health check) and a fully-filled example project (`examples/small-saas/`). v2.2 introduced the Claude Code skill manifest and adapter templates for Cursor / Copilot / AGENTS.md. External effectiveness data still pending — battle-tested by the maintainers daily; field reports from other users still being collected.
+
+## Authors
+
+Built by [**Ethan**](https://ethanflow.com), the person behind [Sprout Labs](https://ethanflow.com). The methodology came out of a Jarvis-style AI collaboration workflow: eight rounds of iteration in a single working day, each triggered by a specific friction point — not a design session.
+
+The methodology itself models the working approach: clear judgment division, refusal to automate away decisions that should be made by humans, and willingness to admit when v1 needs to become v2.
+
+Released under [Sprout Labs](https://ethanflow.com).
+
+## License
+
+[MIT](./LICENSE) — use it, modify it, share it. If it helps your workflow, a star on the repo is appreciated.
+
+## Contributing
+
+Issues and PRs welcome. The methodology is intentionally minimalist — proposals to add mechanisms should clearly identify the specific friction they solve. New traps (mistakes you've hit using this) are especially welcome.

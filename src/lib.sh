@@ -2,3 +2,4 @@
 set -eu
 
 echo "project-brain"
+# clarify the control flow

@@ -34,3 +34,4 @@ Notes and usage details for project-brain.
 - clarify the setup steps
 - link the usage section
 - link the usage section
+- link the usage section

@@ -35,3 +35,4 @@ Notes and usage details for project-brain.
 - link the usage section
 - link the usage section
 - link the usage section
+- add a note about the defaults
